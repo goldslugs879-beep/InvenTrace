@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pantry Ping Pro | Ultra Modern</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-mesh"></div>
+    
+    <div class="app-container">
+        <nav class="glass-nav">
+            <div class="logo">PANTRY PING</div>
+            <div class="nav-controls">
+                <button onclick="toggleTheme()" id="theme-btn">🌙 Toggle</button>
+                <div id="system-status" class="status-pill active">SYSTEM ACTIVE</div>
+            </div>
+        </nav>
+
+        <div class="view-tabs">
+            <button onclick="switchView('staff')" id="tab-staff" class="active-tab">Staff View</button>
+            <button onclick="requestManagerAccess()" id="tab-manager">Manager View</button>
+        </div>
+
+        <main id="main-content">
+            <section id="staff-section" class="view-content">
+                <div class="card glass">
+                    <h3>Remove Items from Stock</h3>
+                    <div class="input-grid">
+                        <input type="text" id="staff-name" placeholder="Your Name">
+                        <select id="staff-item-list"></select>
+                        <input type="number" id="staff-qty" placeholder="Quantity to Take">
+                        <button onclick="processTransaction('remove')" class="btn-remove">Remove from Stock</button>
+                    </div>
+                </div>
+            </section>
+<section id="manager-section" class="card glass" style="display:none;">
+    <div class="manager-header">
+        <h3>🚀 Stocking Engine</h3>
+        <p>Log new arrivals with full accountability</p>
+    </div>
+    
+    <div class="input-grid">
+        <div class="input-field">
+            <label>Authorized Manager</label>
+            <input type="text" id="mgr-name" placeholder="Enter your name">
+        </div>
+        <div class="input-field">
+            <label>Item Name</label>
+            <input type="text" id="mgr-item" placeholder="e.g., Organic Eggs">
+        </div>
+        <div class="input-field">
+            <label>Category</label>
+            <input type="text" id="mgr-cat" placeholder="e.g., Poultry">
+        </div>
+        <div class="input-field">
+            <label>Quantity</label>
+            <input type="number" id="mgr-qty" placeholder="0">
+        </div>
+    </div>
+    
+    <button onclick="addInventory()" class="btn-success-glow">Update Stock Records</button>
+</section>
+            <section id="manager-section" class="view-content" style="display:none;">
+                <div class="admin-grid">
+                    <div class="card glass">
+                        <h3>Inventory Stocking</h3>
+                        <div class="input-grid">
+                            <input type="text" id="mgr-name" placeholder="Manager Name">
+                            <input type="text" id="mgr-item" placeholder="New/Existing Item">
+                            <input type="text" id="mgr-cat" placeholder="Category">
+                            <input type="number" id="mgr-qty" placeholder="Quantity to Add">
+                            <button onclick="processTransaction('add')" class="btn-add">Add to Stock</button>
+                        </div>
+                    </div>
+                    <div class="card glass control-panel">
+                        <h3>System Controls</h3>
+                        <button onclick="toggleSystemState()" id="state-toggle-btn" class="btn-warning">Deactivate System</button>
+                        <div class="total-badge">
+                            Total Units in Stock: <span id="grand-total">0</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <section class="inventory-section">
+            <div class="card glass">
+                <div class="table-header">
+                    <h3>Live Stock Inventory</h3>
+                    <input type="text" id="search-bar" onkeyup="searchInventory()" placeholder="Search items or categories...">
+                </div>
+                <div class="scroll-area">
+                    <table id="inventory-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Category</th>
+                                <th>In Stock</th>
+                                <th>Last Updated By</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <footer class="card glass log-section">
+            <h3>🛡️ High Integrity Audit Log</h3>
+            <div id="audit-log" class="log-container"></div>
+        </footer>
+    </div>
+
+    <div id="security-modal" class="modal">
+        <div class="modal-content glass">
+            <h2>Manager Security</h2>
+            <p>Enter 4-digit security code:</p>
+            <input type="password" id="pin-input" maxlength="4">
+            <div class="modal-btns">
+                <button onclick="validatePIN()">Unlock</button>
+                <button onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
