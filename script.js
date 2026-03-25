@@ -1,142 +1,115 @@
-// --- INITIAL STATE ---
-let inventory = {
-    "Milk": { quantity: 12, category: "Dairy", lastBy: "Aseye" },
-    "Bread": { quantity: 5, category: "Produce", lastBy: "Aseye" }
-};
-let logs = [];
+// --- INITIAL STATE & DATA PERSISTENCE ---
+let inventory = JSON.parse(localStorage.getItem('pantryData')) || {};
+let logs = JSON.parse(localStorage.getItem('pantryLogs')) || [];
+let staffAccounts = JSON.parse(localStorage.getItem('staffAccounts')) || {};
 let isSystemActive = true;
-const MASTER_PIN = "1234";
+let activeStaffName = "";
+const MASTER_PIN = "1234"; 
 
-// --- THEME & VIEWS ---
-function toggleTheme() {
-    const root = document.documentElement;
-    const current = root.getAttribute('data-theme');
-    const next = current === 'dark' ? 'light' : 'dark';
-    root.setAttribute('data-theme', next);
-    document.getElementById('theme-btn').innerText = next === 'dark' ? "🌙 Dark Mode" : "☀️ Light Mode";
-}
-
-function requestManagerAccess() {
-    document.getElementById('security-modal').style.display = 'flex';
-}
-
+// --- AUTHENTICATION & SECURITY ---
+function openSecurity() { document.getElementById('security-modal').style.display = 'flex'; }
+function closeModal() { document.getElementById('security-modal').style.display = 'none'; document.getElementById('pin-input').value = ''; }
 
 function validatePIN() {
-    const pin = document.getElementById('pin-input').value;
-    if (pin === MASTER_PIN) {
+    if (document.getElementById('pin-input').value === MASTER_PIN) {
         switchView('manager');
         closeModal();
-    } else {
-        alert("Incorrect Security Code!");
-    }
+    } else { alert("Incorrect Security Code!"); }
 }
 
-function switchView(view) {
-    document.getElementById('staff-section').style.display = view === 'staff' ? 'block' : 'none';
-    document.getElementById('manager-section').style.display = view === 'manager' ? 'block' : 'none';
-    document.getElementById('tab-staff').className = view === 'staff' ? 'active-tab' : '';
-    document.getElementById('tab-manager').className = view === 'manager' ? 'active-tab' : '';
-}
+// --- STAFF MANAGEMENT ---
+function createStaffAccount() {
+    const id = document.getElementById('new-staff-id').value.trim();
+    const name = document.getElementById('new-staff-name').value.trim();
+    const gender = document.getElementById('new-staff-gender').value;
 
-function closeModal() {
-    document.getElementById('security-modal').style.display = 'none';
-    document.getElementById('pin-input').value = '';
-}
-function toggleSystemState() {
-    isSystemActive = !isSystemActive;
-    const badge = document.getElementById('system-status');
-    const toggleBtn = document.getElementById('state-toggle-btn');
+    if (!id || !name || !gender) return alert("Fill Name, ID, and Gender.");
+    if (staffAccounts[id]) return alert("ID already exists!");
 
-    // Update Text
-    badge.innerText = isSystemActive ? "SYSTEM ACTIVE" : "SYSTEM INACTIVE";
+    staffAccounts[id] = { name: name, gender: gender };
+    localStorage.setItem('staffAccounts', JSON.stringify(staffAccounts));
     
-    // Update Class for CSS Colors
-    badge.className = `status-pill ${isSystemActive ? 'active' : 'inactive'}`;
+    renderStaffDirectory();
+    alert(`Registered: ${name}`);
     
-    // Update the button label
-    toggleBtn.innerText = isSystemActive ? "Deactivate System" : "Activate System";
-    
-    // Optional: Log the system state change for high integrity
-    const time = new Date().toLocaleTimeString();
-    logs.unshift(`[${time}] SYSTEM STATE CHANGED TO: ${isSystemActive ? 'ACTIVE' : 'INACTIVE'}`);
-    renderApp();
-}
-function addInventory() {
-    if (!isSystemActive) {
-        alert("ACCESS DENIED: System is currently INACTIVE (Grey Light).");
-        return;
-    }
-
-    const managerName = document.getElementById('mgr-name').value.trim();
-    const itemName = document.getElementById('mgr-item').value.trim();
-    const category = document.getElementById('mgr-cat').value.trim();
-    const quantity = parseInt(document.getElementById('mgr-qty').value);
-
-    // Validation for High Integrity
-    if (!managerName || !itemName || !category || isNaN(quantity) || quantity <= 0) {
-        alert("ERROR: All fields are required to stock inventory.");
-        return;
-    }
-
-    // Update Inventory Object
-    if (inventory[itemName]) {
-        inventory[itemName].quantity += quantity;
-        inventory[itemName].lastBy = managerName;
-    } else {
-        inventory[itemName] = {
-            quantity: quantity,
-            category: category,
-            lastBy: managerName
-        };
-    }
-
-    // Log the "Added" event with precise metadata
-    const timeStamp = new Date().toLocaleString();
-    const logMessage = `[${timeStamp}] STOCK ADDED: ${managerName} added ${quantity} units to ${itemName} (${category})`;
-    logs.unshift(logMessage);
-
-    // Refresh the User Interface
-    renderApp();
-    clearManagerInputs();
+    document.getElementById('new-staff-id').value = '';
+    document.getElementById('new-staff-name').value = '';
+    document.getElementById('new-staff-gender').selectedIndex = 0;
 }
 
-function clearManagerInputs() {
-    document.getElementById('mgr-item').value = '';
-    document.getElementById('mgr-qty').value = '';
+function renderStaffDirectory() {
+    const body = document.getElementById('staff-directory-body');
+    body.innerHTML = "";
+    for (let id in staffAccounts) {
+        body.innerHTML += `
+            <tr>
+                <td><code>${id}</code></td>
+                <td>${staffAccounts[id].name}</td>
+                <td><span class="gender-tag">${staffAccounts[id].gender}</span></td>
+                <td><button onclick="deleteStaff('${id}')" class="btn-remove-small">Delete</button></td>
+            </tr>`;
+    }
 }
 
-// --- CORE ENGINE ---
+function deleteStaff(id) {
+    if (confirm("Delete this account?")) {
+        delete staffAccounts[id];
+        localStorage.setItem('staffAccounts', JSON.stringify(staffAccounts));
+        renderStaffDirectory();
+    }
+}
+
+function staffLogin() {
+    const id = document.getElementById('staff-id-entry').value.trim();
+    if (staffAccounts[id]) {
+        activeStaffName = staffAccounts[id].name;
+        document.getElementById('staff-login-area').style.display = 'none';
+        document.getElementById('staff-action-area').style.display = 'block';
+        document.getElementById('greeting').innerText = `Welcome, ${activeStaffName}`;
+    } else { alert("Access Denied: ID not found."); }
+}
+
+function logoutStaff() {
+    activeStaffName = "";
+    document.getElementById('staff-login-area').style.display = 'block';
+    document.getElementById('staff-action-area').style.display = 'none';
+}
+
+// --- CORE TRANSACTION ENGINE ---
 function toggleSystemState() {
     isSystemActive = !isSystemActive;
     const badge = document.getElementById('system-status');
     badge.innerText = isSystemActive ? "SYSTEM ACTIVE" : "SYSTEM INACTIVE";
     badge.className = `status-pill ${isSystemActive ? 'active' : 'inactive'}`;
-    document.getElementById('state-toggle-btn').innerText = isSystemActive ? "Deactivate System" : "Activate System";
 }
 
 function processTransaction(type) {
-    if (!isSystemActive) return alert("System is currently INACTIVE.");
+    if (!isSystemActive) return alert("System is currently INACTIVE (Grey Light).");
 
-    const name = type === 'add' ? document.getElementById('mgr-name').value : document.getElementById('staff-name').value;
     const item = type === 'add' ? document.getElementById('mgr-item').value : document.getElementById('staff-item-list').value;
     const qty = parseInt(type === 'add' ? document.getElementById('mgr-qty').value : document.getElementById('staff-qty').value);
-    const category = type === 'add' ? document.getElementById('mgr-cat').value : "";
+    const actor = type === 'add' ? "Manager" : activeStaffName;
 
-    if (!name || !item || isNaN(qty)) return alert("Missing data!");
+    if (!item || isNaN(qty) || qty <= 0) return alert("Invalid inputs.");
 
     if (type === 'add') {
-        if (!inventory[item]) inventory[item] = { quantity: 0, category: category };
+        const cat = document.getElementById('mgr-cat').value || "General";
+        if (!inventory[item]) inventory[item] = { quantity: 0, category: cat };
         inventory[item].quantity += qty;
-        inventory[item].lastBy = name;
+        inventory[item].lastBy = "Manager";
     } else {
-        if (inventory[item].quantity < qty) return alert("Insufficient Stock!");
+        if (!inventory[item] || inventory[item].quantity < qty) return alert("Stock unavailable!");
         inventory[item].quantity -= qty;
-        inventory[item].lastBy = name;
+        inventory[item].lastBy = actor;
     }
 
-    // High Integrity Logging
-    const log = `[${new Date().toLocaleTimeString()}] ${name} ${type.toUpperCase()}ED ${qty} units of ${item}`;
-    logs.unshift(log);
+    logs.unshift(`[${new Date().toLocaleTimeString()}] ${actor} ${type.toUpperCase()}ED ${qty} ${item}`);
+    saveAndRefresh();
+}
+
+function saveAndRefresh() {
+    localStorage.setItem('pantryData', JSON.stringify(inventory));
+    localStorage.setItem('pantryLogs', JSON.stringify(logs));
     renderApp();
 }
 
@@ -144,38 +117,32 @@ function renderApp() {
     const table = document.getElementById('inventory-body');
     const staffSelect = document.getElementById('staff-item-list');
     const logBox = document.getElementById('audit-log');
-    let grandTotal = 0;
+    let total = 0;
 
     table.innerHTML = "";
     staffSelect.innerHTML = "";
     
     for (let key in inventory) {
-        grandTotal += inventory[key].quantity;
+        total += inventory[key].quantity;
         table.innerHTML += `<tr><td>${key}</td><td>${inventory[key].category}</td><td>${inventory[key].quantity}</td><td>${inventory[key].lastBy}</td></tr>`;
         staffSelect.innerHTML += `<option value="${key}">${key}</option>`;
     }
 
     logBox.innerHTML = logs.map(l => `<div class="log-entry">> ${l}</div>`).join('');
-    document.getElementById('grand-total').innerText = grandTotal;
+    document.getElementById('grand-total').innerText = total;
 }
 
-function searchInventory() {
-    const q = document.getElementById('search-bar').value.toLowerCase();
-    const rows = document.querySelectorAll('#inventory-body tr');
-    rows.forEach(r => r.style.display = r.innerText.toLowerCase().includes(q) ? "" : "none");
-}
-// Add this to your renderApp function to save data automatically
-function saveData() {
-    localStorage.setItem('pantryData', JSON.stringify(inventory));
-    localStorage.setItem('pantryLogs', JSON.stringify(logs));
+function switchView(view) {
+    document.getElementById('staff-section').style.display = view === 'staff' ? 'block' : 'none';
+    document.getElementById('manager-section').style.display = view === 'manager' ? 'block' : 'none';
+    if (view === 'manager') renderStaffDirectory();
+    document.getElementById('tab-staff').classList.toggle('active-tab', view === 'staff');
+    document.getElementById('tab-manager').classList.toggle('active-tab', view === 'manager');
 }
 
-// Add this to the top of your script to load data when the page opens
-window.onload = () => {
-    const savedData = localStorage.getItem('pantryData');
-    const savedLogs = localStorage.getItem('pantryLogs');
-    if (savedData) inventory = JSON.parse(savedData);
-    if (savedLogs) logs = JSON.parse(savedLogs);
-    renderApp();
-};
+function toggleTheme() {
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
 window.onload = renderApp;
