@@ -74,6 +74,43 @@ function logoutStaff() {
     document.getElementById('staff-login-area').style.display = 'block';
     document.getElementById('staff-action-area').style.display = 'none';
 }
+// --- DATA EXPORT (CSV Format for Excel) ---
+function exportData() {
+    let csvContent = "data:text/csv;charset=utf-8,";
+    
+    // Header Row
+    csvContent += "Item Name,Category,Quantity,Last Modified By\n";
+    
+    // Data Rows
+    for (let item in inventory) {
+        const row = `${item},${inventory[item].category},${inventory[item].quantity},${inventory[item].lastBy}`;
+        csvContent += row + "\n";
+    }
+
+    // Create a hidden link and trigger download
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `Pantry_Backup_${new Date().toLocaleDateString()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// --- FULL SYSTEM RESET ---
+function resetSystem() {
+    const confirmation = confirm("WARNING: This will delete ALL items, staff accounts, and logs. This cannot be undone. Proceed?");
+    
+    if (confirmation) {
+        const finalPin = prompt("Enter Master PIN to confirm full wipe:");
+        if (finalPin === MASTER_PIN) {
+            localStorage.clear();
+            location.reload(); // Refreshes the app to a clean state
+        } else {
+            alert("Incorrect PIN. Reset aborted.");
+        }
+    }
+}
 
 // --- CORE TRANSACTION ENGINE ---
 function toggleSystemState() {

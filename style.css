@@ -148,6 +148,26 @@ table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9
 th { color: var(--text-dim); font-weight: 400; padding: 10px; border-bottom: 1px solid var(--border); }
 td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
 
+.mgr-btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-danger-outline {
+    background: transparent;
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    padding: 10px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.btn-danger-outline:hover {
+    background: var(--danger);
+    color: white;
+}
 
 .log-stream { background: rgba(0,0,0,0.3); height: 150px; overflow-y: auto; padding: 1rem; border-radius: 10px; font-family: monospace; font-size: 0.8rem; }
 .modal-overlay {
