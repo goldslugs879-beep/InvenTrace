@@ -16,7 +16,7 @@ const db = firebase.database();
 let inventory = {};
 let staffAccounts = {};
 let activeStaffName = "";
-const MASTER_PIN = "2026";
+const MASTER_PIN = "1234";
 
 // --- 2. THE REACTIVE LISTENER ---
 // This is the heart of the "Concurrent" update
