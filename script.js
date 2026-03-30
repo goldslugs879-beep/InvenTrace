@@ -121,7 +121,7 @@ function processTransaction(type) {
         logoutStaff();
     }
 
-    logs.unshift(`[${new Date().toLocaleTimeString()}] ${actor} ${type.toUpperCase()}D ${qty} ${item}`);
+    logs.unshift(`[${new Date().toLocaleTimeString()}] ${actor} ${type.toUpperCase()}ED ${qty} ${item}`);
     saveAndRefresh();
 }
 
