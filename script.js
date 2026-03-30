@@ -101,7 +101,7 @@ function processTransaction(type) {
     const qtyInput = type === 'add' ? document.getElementById('mgr-qty') : document.getElementById('staff-qty');
     
     const item = itemInput.value;
-    const qty = parseInt(qtyInput.value);
+    const qty = qtyInput.value;
     const actor = type === 'add' ? "Manager" : activeStaffName;
 
     if (!item || isNaN(qty) || qty <= 0) return alert("Please enter valid details.");
