@@ -29,7 +29,7 @@ function editItem(itemName) {
     const newCat = prompt(`Edit Category for ${itemName}:`, item.category);
 
     if (newQty !== null && newCat !== null) {
-        inventory[itemName].quantity = parseInt(newQty);
+        inventory[itemName].quantity = newQty;
         inventory[itemName].category = newCat;
         inventory[itemName].lastBy = "Manager (Edited)";
         saveAndRefresh();
