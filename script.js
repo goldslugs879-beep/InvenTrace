@@ -184,6 +184,22 @@ function createStaffAccount() {
         alert("Staff account created successfully!");
     }
 }
+function toggleTheme() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    html.setAttribute('data-theme', newTheme);
+    
+    // Optional: Save preference so it stays dark when you refresh
+    localStorage.setItem('theme', newTheme);
+}
+
+// Add this to your window.onload to remember the choice
+window.addEventListener('load', () => {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+});
 // --- CLEAR ONLY THE HISTORY LOGS ---
 function clearAuditLogs() {
     if (confirm("Are you sure you want to clear the entire history log?")) {
