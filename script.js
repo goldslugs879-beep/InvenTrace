@@ -269,7 +269,7 @@ function exportData() {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `PING_PRO_Inventory_${new Date().toLocaleDateString()}.csv`;
+    a.download = `INVENTRACE_Inventory_${new Date().toLocaleDateString()}.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
 }
