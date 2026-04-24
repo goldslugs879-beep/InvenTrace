@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ping Pro</title>
+    <title>InvenTrace</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
@@ -12,7 +12,7 @@
     
     <div class="container">
         <header class="glass-header card">
-            <div class="logo">PING<span>PRO</span></div>
+            <div class="logo">INVEN<span>TRACE</span></div>
             <div class="header-controls">
                 <div id="system-status" class="status-pill active">SYSTEM ACTIVE</div>
                 <button onclick="toggleTheme()" class="btn-outline">Theme🌓</button>
@@ -52,8 +52,8 @@
                         <input type="tel" id="new-staff-contact" placeholder="Contact Number (e.g. 024...)">
                         <select id="new-staff-gender">
                             <option value="" disabled selected>Gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
+                            <option value="M">Male</option>
+                            <option value="F">Female</option>
                         </select>
                         <button onclick="createStaffAccount()" class="btn-success">Save Staff Member</button>
                     </div>
@@ -67,30 +67,30 @@
                     </div>
                 </div>
 
-                 <section class="card glass">
-                <div class="table-header">
-                    <h3>Current Inventory</h3>
-                    <input type="text" id="search-bar" onkeyup="searchInventory()" placeholder="Search stock...">
-                </div>
-                <div class="table-scroll">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Item</th>
-                                <th>Category</th>
-                                <th>Qty</th>
-                                <th>Last By</th>
-                                <th class="mgr-only">Actions</th> </tr>
-                                <th class="mgr-action-head" style="display:none;">Admin</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inventory-body"></tbody>
-                    </table>
-                </div>
-                <div class="stats-footer">
-                    Total Units in Stock: <span id="grand-total">0</span>
-                </div>
-            </section>
+                <section class="card glass">
+                    <div class="table-header">
+                        <h3>Current Inventory</h3>
+                        <input type="text" id="search-bar" onkeyup="searchInventory()" placeholder="Search stock...">
+                    </div>
+                    <div class="table-scroll">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Category</th>
+                                    <th>Qty</th>
+                                    <th>Last By</th>
+                                    <th class="mgr-only">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-body"></tbody>
+                        </table>
+                    </div>
+                    <div class="stats-footer">
+                        Total Units in Stock: <span id="grand-total">0</span>
+                    </div>
+                </section>
+
                 <div class="card glass">
                     <h3>👥 Staff Directory</h3>
                     <div class="table-scroll">
@@ -107,14 +107,14 @@
                     <h3>🛡️ Audit Trail</h3>
                     <div id="audit-log" class="log-stream"></div>
                     <div class="mgr-btn-group">
-                    <button onclick="exportData()" class="btn-outline">Export-CSV</button>
-                    <button onclick="clearAuditLogs()" class="btn-remove">Clear Logs</button>    
+                        <button onclick="exportData()" class="btn-outline">Export-CSV</button>
+                        <button onclick="clearAuditLogs()" class="btn-remove">Clear Logs</button>    
                     </div>
-                              
-        <div class="mgr-controls">
-        <button onclick="masterReset()" class="btn-danger-outline">Full System Reset</button><br>
-        <button id="state-toggle-btn" onclick="toggleSystemState()" class="btn-warning">Toggle System</button>
-    </div>
+
+                    <div class="mgr-controls">
+                        <button onclick="masterReset()" class="btn-danger-outline">Full System Reset</button><br>
+                        <button id="state-toggle-btn" onclick="toggleSystemState()" class="btn-warning">Toggle System</button>
+                    </div>
                 </div>
             </section>
         </main>
